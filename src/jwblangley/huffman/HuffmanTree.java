@@ -1,6 +1,7 @@
 package jwblangley.huffman;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +9,11 @@ import java.util.PriorityQueue;
 
 public class HuffmanTree<T> implements Serializable {
 
-  public Map<T, String> compressionMap = new HashMap<>();
+  private Map<T, String> compressionMap = new HashMap<>();
+  private HuffmanNode<T> root;
 
   public HuffmanTree(Map<T, Integer> valueCount) {
     assert valueCount.size() > 1 : "Cannot compress a single item";
-
-    HuffmanNode<T> root;
 
     //build tree
     PriorityQueue<HuffmanNode<T>> queue = new PriorityQueue<>();
@@ -34,13 +34,6 @@ public class HuffmanTree<T> implements Serializable {
     System.out.println(compressionMap.values().stream().mapToInt(String::length).average());
   }
 
-  public String compressAll(List<T> inputs) {
-    StringBuilder sb = new StringBuilder();
-    //stream is sequential by default;
-    inputs.stream().map(compressionMap::get).forEach(sb::append);
-    return sb.toString();
-  }
-
   private void generateMap(HuffmanNode<T> root, String path) {
     if (root instanceof HuffmanLeafNode) {
       compressionMap.put(((HuffmanLeafNode<T>) root).getValue(), path);
@@ -50,6 +43,33 @@ public class HuffmanTree<T> implements Serializable {
     HuffmanInternalNode internalNode = (HuffmanInternalNode) root;
     generateMap(internalNode.getLeft(), path + "0");
     generateMap(internalNode.getRight(), path + "1");
+  }
+
+  public List<T> decompressAll(String encoded) {
+    List<T> results = new ArrayList<>();
+
+    HuffmanNode<T> current = root;
+
+    do {
+      HuffmanInternalNode<T> internalNode = (HuffmanInternalNode<T>) current;
+      current = encoded.charAt(0) == '0' ? internalNode.getLeft() : internalNode.getRight();
+      if (current instanceof HuffmanLeafNode) {
+        results.add(((HuffmanLeafNode<T>) current).getValue());
+        current = root;
+      }
+      encoded = encoded.substring(1);
+    } while (encoded.length() > 0);
+
+    return results;
+  }
+
+  public static <S> Map<S, Integer> countItems(List<S> items) {
+    Map<S, Integer> counted = new HashMap<>();
+    for (S item : items) {
+      int temp = counted.containsKey(item) ? counted.get(item) : 0;
+      counted.put(item, temp + 1);
+    }
+    return counted;
   }
 
 }
