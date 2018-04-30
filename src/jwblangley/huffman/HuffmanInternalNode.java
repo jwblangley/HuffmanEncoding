@@ -4,8 +4,10 @@ public class HuffmanInternalNode<T> extends HuffmanNode<T> {
 
   private HuffmanNode left, right;
 
-  public HuffmanInternalNode(int frequency) {
-    super(frequency);
+  public HuffmanInternalNode(HuffmanNode<T> left, HuffmanNode<T> right) {
+    super(left.frequency() + right.frequency());
+    this.left = left;
+    this.right = right;
   }
 
   public HuffmanNode getLeft() {
