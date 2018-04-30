@@ -2,6 +2,7 @@ package jwblangley.huffman;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -30,6 +31,14 @@ public class HuffmanTree<T> implements Serializable {
     assert queue.isEmpty();
 
     generateMap(root, "");
+    System.out.println(compressionMap.values().stream().mapToInt(String::length).average());
+  }
+
+  public String compressAll(List<T> inputs) {
+    StringBuilder sb = new StringBuilder();
+    //stream is sequential by default;
+    inputs.stream().map(compressionMap::get).forEach(sb::append);
+    return sb.toString();
   }
 
   private void generateMap(HuffmanNode<T> root, String path) {
