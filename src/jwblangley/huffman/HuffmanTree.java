@@ -31,7 +31,6 @@ public class HuffmanTree<T> implements Serializable {
     assert queue.isEmpty();
 
     generateMap(root, "");
-    System.out.println(compressionMap.values().stream().mapToInt(String::length).average());
   }
 
   private void generateMap(HuffmanNode<T> root, String path) {
@@ -43,6 +42,13 @@ public class HuffmanTree<T> implements Serializable {
     HuffmanInternalNode internalNode = (HuffmanInternalNode) root;
     generateMap(internalNode.getLeft(), path + "0");
     generateMap(internalNode.getRight(), path + "1");
+  }
+
+  public String compressAll(List<T> inputs) {
+    StringBuilder sb = new StringBuilder();
+    //stream is sequential by default;
+    inputs.stream().map(compressionMap::get).forEach(sb::append);
+    return sb.toString();
   }
 
   public List<T> decompressAll(String encoded) {
